@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video & PDF Summarizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        #summary {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Summarize YouTube Video</h2>
+        <input type="text" id="youtube-url" placeholder="Enter YouTube URL">
+        <button onclick="summarizeYouTube()">Summarize</button>
+        
+        <h2>Summarize PDF</h2>
+        <input type="file" id="pdf-file">
+        <button onclick="summarizePDF()">Summarize</button>
+        
+        <h2>Summary</h2>
+        <div id="summary">Your summary will appear here...</div>
+    </div>
+    
+    <script>
+        async function summarizeYouTube() {
+            const url = document.getElementById("youtube-url").value;
+            const response = await fetch(`/summarize/youtube/?url=${encodeURIComponent(url)}`);
+            const data = await response.json();
+            document.getElementById("summary").innerText = data.summary || "Error generating summary";
+        }
+
+        async function summarizePDF() {
+            const fileInput = document.getElementById("pdf-file");
+            const formData = new FormData();
+            formData.append("pdf", fileInput.files[0]);
+
+            const response = await fetch("/summarize/pdf/", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            document.getElementById("summary").innerText = data.summary || "Error generating summary";
+        }
+    </script>
+</body>
+</html>
